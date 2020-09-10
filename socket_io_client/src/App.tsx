@@ -9,6 +9,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import CryptoJS from "crypto-js";
+import crypto from "crypto";
 const ENDPOINT = "http://127.0.0.1:4001";
 
 function App() {
@@ -18,17 +19,35 @@ function App() {
   let [sessionExists, setSessionExists] = useState(false);
   const [urlToKey, setUrlToKey] = useState("");
 
-  const generateRandomHexKey = (length: number): string => {
-    let ret = "";
-    while (ret.length < length) {
-      ret += Math.random().toString(16).substring(2);
-    }
-    return ret.substring(0, length);
+  const generateRandomHexKeyorIV = (length: number): Buffer => {
+    return crypto.randomBytes(length);
   };
 
-  const encryptData = (data: any) => {};
+  const encryptData = (data: any) => {
+    const iv = generateRandomHexKeyorIV(16).toString("hex"); // new iv for every message
+    const encrypted = CryptoJS.AES.encrypt(data, key.current, {
+      mode: CryptoJS.mode.CFB,
+      iv: iv,
+    }).toString();
+    const auth_tag = CryptoJS.HmacSHA1(encrypted, key.current).toString();
+    return iv + encrypted + auth_tag;
+  };
 
-  const decryptData = (data: any) => {};
+  const decryptData = (data: any) => {
+    const iv = data.slice(0, 32);
+    const ciphertext = data.slice(32, -40);
+    const auth_tag = data.slice(-40);
+    console.log(auth_tag);
+    if (CryptoJS.HmacSHA1(ciphertext, key.current).toString() !== auth_tag) {
+      return "error with auth";
+    } else {
+      const decrypted = CryptoJS.AES.decrypt(ciphertext, key.current, {
+        mode: CryptoJS.mode.CFB,
+        iv: iv,
+      }).toString(CryptoJS.enc.Utf8);
+      return decrypted;
+    }
+  };
 
   useEffect(() => {
     socket.current = socketIOClient(ENDPOINT);
@@ -38,6 +57,7 @@ function App() {
 
     if (window.location.pathname === "/reciever/") {
       key.current = window.location.hash.slice(1);
+      console.log(`reciever key ${key.current}`);
       window.history.replaceState(
         null,
         document.title,
@@ -48,8 +68,7 @@ function App() {
     }
 
     socket.current.on("new message", (data: any) => {
-      setData(data);
-      decryptData(data);
+      setData(decryptData(data));
     });
 
     socket.current.on("session is ready", () => {
@@ -62,13 +81,12 @@ function App() {
   }, []);
 
   const handleTextOnChange = (event: any) => {
-    const data = encryptData(event.target.value);
-    socket.current.emit("new message", data);
+    socket.current.emit("new message", encryptData(event.target.value));
     setData(event.target.value);
   };
 
   const handleCreateNewSessOnClick = (event: any) => {
-    key.current = generateRandomHexKey(56);
+    key.current = generateRandomHexKeyorIV(32).toString("hex");
     setUrlToKey(`localhost:3000/reciever/#${key.current}`);
   };
 
