@@ -49,8 +49,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .textareaDiv {
-  position: absolute;
+  position: relative;
+}
+
+.buttonDiv {
+  position: relative;
 }

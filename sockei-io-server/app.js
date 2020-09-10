@@ -14,6 +14,7 @@ const io = socketIo(server);
 
 let clients = [];
 let encryptedData = "";
+let urlToKey = "";
 
 io.on("connection", (socket) => {
   clients.push(socket);
@@ -23,11 +24,23 @@ io.on("connection", (socket) => {
     encryptedData = data;
     console.log(data);
     socket.broadcast.emit("new message", data);
-    socket.emit("get message", data);
   });
 
   socket.on("get data", () => {
-    socket.e;
+    io.to(socket.id).emit("get data", encryptedData);
+  });
+
+  socket.on("key event", (data) => {
+    if (data) {
+      urlToKey = data;
+    } else {
+      io.to(socket.id).emit("key event", data);
+    }
+  });
+
+  socket.on("session is ready", () => {
+    console.log("session is ready event active");
+    socket.broadcast.emit("session is ready");
   });
 });
 
