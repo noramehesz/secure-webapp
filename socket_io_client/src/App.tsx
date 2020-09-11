@@ -96,25 +96,34 @@ function App() {
         <Switch>
           <Route path={"/sender"}>
             <div className="textareaDiv">
-              <textarea
+              <span className="labelAboveInput">WRITE YOUR TEXT HERE</span>
+              <input
+                type="text"
                 className={"sharedData"}
                 onChange={handleTextOnChange}
                 value={data}
                 disabled={!sessionExists}
-              ></textarea>
+              ></input>
             </div>
             {!sessionExists && (
-              <div className="buttonDiv">
-                <button onClick={handleCreateNewSessOnClick}>
-                  Create new session
-                </button>
+              <div className="createSession">
+                <div className="buttonDiv">
+                  <button
+                    onClick={handleCreateNewSessOnClick}
+                    className="sessionButton"
+                  >
+                    Create new session
+                  </button>
+                </div>
                 <p>{urlToKey}</p>
               </div>
             )}
           </Route>
           <Route path={"/reciever"}>
-            <p> You are the reciever </p>
-            <h1>{data}</h1>
+            <p className="labelForSharedData"> SHARED DATA </p>
+            <div className="recieverDiv">
+              <h1 className="recievedData">{data}</h1>
+            </div>
           </Route>
           <Route path={"/"}>
             <Redirect to={"/sender"}></Redirect>
