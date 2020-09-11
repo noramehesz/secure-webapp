@@ -4,7 +4,7 @@
 * Web crypto API
   > Used for generating keys and IV-s
 * [CryptoJs]( https://code.google.com/archive/p/crypto-js/)
-  > Use for encrytion and decryption (AES256 in CFB mode and HmacSHA1)
+  > Used for encrytion and decryption (AES256 in CFB mode and HmacSHA1)
 * ReactJs
 * [Socket.IO](https://socket.io/)
   > Used for the real-time data sharing among the clients
