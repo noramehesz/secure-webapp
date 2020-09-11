@@ -24,7 +24,7 @@ function App() {
   };
 
   // encrypt the data, each with a new IV (16 byte long) in CFB mode without padding
-  // and use HmacSHA1 for integrity
+  // and use HmacSHA1 for integrity protection
   const encryptData = (data: any) => {
     const iv = generateRandomHexKeyorIV(16).toString("hex");
     const encrypted = CryptoJS.AES.encrypt(data, key.current, {
