@@ -40,7 +40,7 @@ function App() {
     const ciphertext = data.slice(32, -40);
     const auth_tag = data.slice(-40);
     if (CryptoJS.HmacSHA1(ciphertext, key.current).toString() !== auth_tag) {
-      //check auth_tag, problem occurs when the key or the auth_tag in the encrypted message is wrong
+      //check auth_tag, problem occurres when the key or the auth_tag in the encrypted message is wrong
       return "error while decrypting the data";
     } else {
       const decrypted = CryptoJS.AES.decrypt(ciphertext, key.current, {
