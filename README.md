@@ -10,8 +10,8 @@
   > Used for the real-time data sharing among the clients
 
 ## To try this app run
-* node app.js on the server side 
-* npm start on the client side 
+* `node app.js` on the server side 
+* `npm start` on the client side 
 
 ***
 
