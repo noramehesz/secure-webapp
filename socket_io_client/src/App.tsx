@@ -20,11 +20,13 @@ function App() {
   const [urlToKey, setUrlToKey] = useState("");
 
   const generateRandomHexKeyorIV = (length: number): Buffer => {
-    return crypto.randomBytes(length);
+    return crypto.randomBytes(length); // use randomBytes() to get randrom values with the given length
   };
 
+  // encrypt the data, each with a new IV (16 byte long) in CFB mode without padding
+  // and use HmacSHA1 for integrity
   const encryptData = (data: any) => {
-    const iv = generateRandomHexKeyorIV(16).toString("hex"); // new iv for every message
+    const iv = generateRandomHexKeyorIV(16).toString("hex");
     const encrypted = CryptoJS.AES.encrypt(data, key.current, {
       mode: CryptoJS.mode.CFB,
       iv: iv,
@@ -37,9 +39,9 @@ function App() {
     const iv = data.slice(0, 32);
     const ciphertext = data.slice(32, -40);
     const auth_tag = data.slice(-40);
-    console.log(auth_tag);
     if (CryptoJS.HmacSHA1(ciphertext, key.current).toString() !== auth_tag) {
-      return "error with auth";
+      //check auth_tag, problem occurs when the key or the auth_tag in the encrypted message is wrong
+      return "error while decrypting the data";
     } else {
       const decrypted = CryptoJS.AES.decrypt(ciphertext, key.current, {
         mode: CryptoJS.mode.CFB,
@@ -52,12 +54,11 @@ function App() {
   useEffect(() => {
     socket.current = socketIOClient(ENDPOINT);
     socket.current.on("connection", (data: any) => {
-      console.log(data);
+      // do nothing
     });
 
-    if (window.location.pathname === "/reciever/") {
+    if (window.location.pathname === "/receiver/") {
       key.current = window.location.hash.slice(1);
-      console.log(`reciever key ${key.current}`);
       window.history.replaceState(
         null,
         document.title,
@@ -86,8 +87,8 @@ function App() {
   };
 
   const handleCreateNewSessOnClick = (event: any) => {
-    key.current = generateRandomHexKeyorIV(32).toString("hex");
-    setUrlToKey(`localhost:3000/reciever/#${key.current}`);
+    key.current = generateRandomHexKeyorIV(32).toString("hex"); //generate a 256 bit long random key
+    setUrlToKey(`localhost:3000/receiver/#${key.current}`);
   };
 
   return (
@@ -119,9 +120,9 @@ function App() {
               </div>
             )}
           </Route>
-          <Route path={"/reciever"}>
+          <Route path={"/receiver"}>
             <p className="labelForSharedData"> SHARED DATA </p>
-            <div className="recieverDiv">
+            <div className="receiverDiv">
               <h1 className="recievedData">{data}</h1>
             </div>
           </Route>
