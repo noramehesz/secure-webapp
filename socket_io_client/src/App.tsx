@@ -116,7 +116,7 @@ function App() {
                     Create new session
                   </button>
                 </div>
-                <p>{urlToKey}</p>
+                <p className="urlToName">{urlToKey}</p>
               </div>
             )}
           </Route>

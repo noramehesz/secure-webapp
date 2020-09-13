@@ -22,7 +22,6 @@ io.on("connection", (socket) => {
 
   socket.on("new message", (data) => {
     encryptedData = data;
-    console.log(data);
     socket.broadcast.emit("new message", data);
   });
 
