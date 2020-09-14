@@ -9,6 +9,8 @@
 - ReactJs
 - [Socket.IO](https://socket.io/)
   > Used for the real-time data sharing among the clients
+- [Testcafe](https://devexpress.github.io/testcafe/)
+  > Used for end to end testing
 
 ## To try this app run
 
